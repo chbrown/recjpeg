@@ -1,8 +1,13 @@
 {
   "name": "recjpeg",
   "description": "Recompress images using custom JPEG encoder",
-  "keywords" : ["evaluation", "image", "compression", "jpeg"],
-  "version": "0.1.0",
+  "keywords": [
+    "evaluation",
+    "image",
+    "compression",
+    "jpeg"
+  ],
+  "version": "0.2.0",
   "homepage": "https://github.com/chbrown/recjpeg",
   "repository": "git://github.com/chbrown/recjpeg.git",
   "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
