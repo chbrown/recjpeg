@@ -7,7 +7,7 @@
     "compression",
     "jpeg"
   ],
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/chbrown/recjpeg",
   "repository": "git://github.com/chbrown/recjpeg.git",
   "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
