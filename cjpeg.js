@@ -1,8 +1,6 @@
-/// <reference path="type_declarations/index.d.ts" />
 var os_1 = require('os');
 var fs = require('fs');
 var path_1 = require('path');
-// import {extname} from 'path';
 var child_process_1 = require('child_process');
 var loge_1 = require('loge');
 /**
@@ -16,8 +14,8 @@ It will clobber the file at `output_filepath` if it exists.
 */
 function convert(input_filepath, output_filepath, options, callback) {
     var resize_args = options.resize ? "-resize " + options.resize : '';
-    var convert_command = "convert \"" + input_filepath + "\" " + resize_args + " TGA:-";
-    var cjpeg_command = "cjpeg -quality " + options.quality + " -outfile \"" + output_filepath + "\" -targa";
+    var convert_command = "convert \"" + input_filepath + "\" " + resize_args + " PNM:-";
+    var cjpeg_command = "cjpeg -quality " + options.quality + " -outfile \"" + output_filepath + "\"";
     loge_1.logger.debug("$ " + convert_command + " | " + cjpeg_command);
     child_process_1.exec(convert_command + " | " + cjpeg_command, function (err, stdout, stderr) {
         if (err) {

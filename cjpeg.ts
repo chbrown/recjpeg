@@ -1,8 +1,6 @@
-/// <reference path="type_declarations/index.d.ts" />
 import {tmpdir} from 'os';
 import fs = require('fs');
 import {join} from 'path';
-// import {extname} from 'path';
 import {exec} from 'child_process';
 import {logger} from 'loge';
 
@@ -25,8 +23,8 @@ export function convert(input_filepath: string,
                         options: ConvertOptions,
                         callback: (error?: Error) => void) {
   var resize_args = options.resize ? `-resize ${options.resize}` : '';
-  var convert_command = `convert "${input_filepath}" ${resize_args} TGA:-`;
-  var cjpeg_command = `cjpeg -quality ${options.quality} -outfile "${output_filepath}" -targa`;
+  var convert_command = `convert "${input_filepath}" ${resize_args} PNM:-`;
+  var cjpeg_command = `cjpeg -quality ${options.quality} -outfile "${output_filepath}"`;
   logger.debug(`$ ${convert_command} | ${cjpeg_command}`);
   exec(`${convert_command} | ${cjpeg_command}`, (err, stdout, stderr) => {
     if (err) {

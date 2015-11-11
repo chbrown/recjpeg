@@ -1,4 +1,3 @@
-/// <reference path="type_declarations/index.d.ts" />
 var os_1 = require('os');
 var async = require('async');
 var yargs = require('yargs');

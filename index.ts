@@ -1,4 +1,3 @@
-/// <reference path="type_declarations/index.d.ts" />
 import {cpus} from 'os';
 import async = require('async');
 import yargs = require('yargs');
