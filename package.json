@@ -18,7 +18,7 @@
   "dependencies": {
     "async": "*",
     "loge": "*",
-    "yargs": "*"
+    "optimist": "*"
   },
   "devDependencies": {
     "declarations": "*",

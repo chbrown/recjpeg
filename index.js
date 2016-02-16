@@ -1,6 +1,6 @@
 var os_1 = require('os');
 var async = require('async');
-var yargs = require('yargs');
+var optimist = require('optimist');
 var loge_1 = require('loge');
 var cjpeg_1 = require('./cjpeg');
 /** recjpeg
@@ -13,7 +13,7 @@ Given a list of JPEG files, do the following to each:
 
 */
 function main() {
-    var argparser = yargs
+    var argvparser = optimist
         .usage("Usage: recjpeg 01.jpg [02.jpg, ...]\n\nRecompress a series of JPEG files with cjpeg.")
         .describe({
         limit: 'number of files to process in parallel',
@@ -31,13 +31,14 @@ function main() {
         quality: 90,
     })
         .boolean(['help', 'verbose']);
-    var argv = yargs.argv;
+    var argv = argvparser.argv;
     if (argv.help) {
-        yargs.showHelp();
+        argvparser.showHelp();
         process.exit(0);
     }
     loge_1.logger.level = argv.verbose ? loge_1.Level.debug : loge_1.Level.info;
-    yargs.demand(1);
+    argvparser = argvparser.demand(1);
+    argv = argvparser.argv;
     var options = { quality: argv.quality, resize: argv.resize };
     var filepaths = argv._;
     loge_1.logger.info("recompressing " + filepaths.length + " files");

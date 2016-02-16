@@ -1,6 +1,6 @@
 import {cpus} from 'os';
 import async = require('async');
-import yargs = require('yargs');
+import optimist = require('optimist');
 import {logger, Level} from 'loge';
 import {convertWithBackup} from './cjpeg';
 
@@ -14,7 +14,7 @@ Given a list of JPEG files, do the following to each:
 
 */
 export function main() {
-  var argparser = yargs
+  var argvparser = optimist
   .usage(`Usage: recjpeg 01.jpg [02.jpg, ...]
 
 Recompress a series of JPEG files with cjpeg.`)
@@ -35,15 +35,16 @@ Recompress a series of JPEG files with cjpeg.`)
   })
   .boolean(['help', 'verbose']);
 
-  var argv = yargs.argv;
+  var argv = argvparser.argv;
   if (argv.help) {
-    yargs.showHelp();
+    argvparser.showHelp();
     process.exit(0);
   }
 
   logger.level = argv.verbose ? Level.debug : Level.info;
 
-  yargs.demand(1);
+  argvparser = argvparser.demand(1);
+  argv = argvparser.argv;
 
   var options = {quality: argv.quality, resize: argv.resize};
   var filepaths: string[] = argv._;
