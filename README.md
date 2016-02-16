@@ -1,5 +1,7 @@
 # recjpeg
 
+[![npm version](https://badge.fury.io/js/recjpeg.svg)](https://www.npmjs.com/package/recjpeg)
+
 For re-encoding JPEGs at the command line using a better `cjpeg` than the original.
 
     npm install -g recjpeg
