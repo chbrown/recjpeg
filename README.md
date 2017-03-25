@@ -16,4 +16,4 @@ Goes well with [qualcomp](https://github.com/chbrown/qualcomp) to determine what
 
 ## License
 
-Copyright 2015 Christopher Brown. [MIT Licensed](http://opensource.org/licenses/MIT).
+Copyright 2015-2017 Christopher Brown. [MIT Licensed](http://chbrown.github.io/licenses/MIT/#2015-2017)
