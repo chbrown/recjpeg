@@ -16,7 +16,7 @@
   "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
   "license": "MIT",
   "bin": {
-    "recjpeg": "bin/recjpeg"
+    "recjpeg": "bin/recjpeg.js"
   },
   "dependencies": {
     "async": "1.5.2",
