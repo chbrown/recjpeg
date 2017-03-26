@@ -1,61 +1,54 @@
-import {cpus} from 'os';
-import async = require('async');
-import optimist = require('optimist');
-import {logger, Level} from 'loge';
-import {convertWithBackup} from './cjpeg';
+import {exec} from 'child_process';
+import {logger} from 'loge';
 
-/** recjpeg
+const shellSpecialRegExp = /\s/; // TODO: should check for way more than whitespace
 
-Given a list of JPEG files, do the following to each:
+function stringifyShellArgument(arg): string {
+  return (arg === undefined || arg === null) ? '' : arg.toString();
+}
 
-1. recompress input.jpg to input.recompressed.jpg
-  a. using the specified quality
-  b. and an optional -resize flag
-
-*/
-export function main() {
-  var argvparser = optimist
-  .usage(`Usage: recjpeg 01.jpg [02.jpg, ...]
-
-Recompress a series of JPEG files with cjpeg.`)
-  .describe({
-    limit: 'number of files to process in parallel',
-    quality: 'cjpeg -quality setting',
-    resize: 'convert -resize argument (e.g., 50%, 1000x1000, 2000x2000>)',
-    help: 'print this help message',
-    verbose: 'print extra output',
-  })
-  .alias({
-    help: 'h',
-    verbose: 'v',
-  })
-  .default({
-    limit: cpus().length,
-    quality: 90,
-  })
-  .boolean(['help', 'verbose']);
-
-  var argv = argvparser.argv;
-  if (argv.help) {
-    argvparser.showHelp();
-    process.exit(0);
+function escapeShellArgument(arg): string {
+  // check if escaping is needed, first
+  if (shellSpecialRegExp.test(arg)) {
+    // escape single quotes
+    const escapedArg = arg.replace(/'/g, '\\$0');
+    // then wrap in single quotes
+    return "'" + escapedArg + "'";
   }
+  return arg;
+}
 
-  logger.level = argv.verbose ? Level.debug : Level.info;
+function joinShellArguments(...args: any[]): string {
+  return args.map(stringifyShellArgument).map(escapeShellArgument).join(' ');
+}
 
-  argvparser = argvparser.demand(1);
-  argv = argvparser.argv;
+function extendExecError(error: Error, stdout: string, stderr: string) {
+  const stdout_messages = stdout ? [`/dev/stdout: ${stdout}`] : []
+  const stderr_messages = stderr ? [`/dev/stderr: ${stderr}`] : []
+  error.message = [error.message, ...stdout_messages, ...stderr_messages].join('\n');
+}
 
-  var options = {quality: argv.quality, resize: argv.resize};
-  var filepaths: string[] = argv._;
-
-  logger.info(`recompressing ${filepaths.length} files`);
-  async.eachLimit(filepaths, argv.limit, (filepath, callback) => {
-    convertWithBackup(filepath, options, callback);
-  }, error => {
-    if (error) throw error;
-
-    logger.debug(`Done recompressing ${filepaths.length} files`);
-    process.exit(0);
+/**
+Read image at `input` and write compressed JPEG to `output`, clobbering any file
+that might already exist at that location.
+*/
+export function convert(input: string,
+                        output: string,
+                        quality: number | string,
+                        options: {resize?: string},
+                        callback: (error?: Error) => void) {
+  const resize_args = options.resize ? ['-resize', options.resize] : [];
+  const convert_command = ['convert', input, ...resize_args, 'PNM:-'];
+  const cjpeg_command = ['cjpeg', '-quality', quality, '-outfile', output];
+  const command = joinShellArguments(...convert_command, '|', ...cjpeg_command);
+  logger.debug(`$ ${command}`);
+  return exec(command, (err, stdout, stderr) => {
+    if (err) {
+      extendExecError(err, stdout, stderr);
+      return callback(err);
+    }
+    if (stdout) logger.debug(`/dev/stdout: ${stdout}`);
+    if (stderr) logger.debug(`/dev/stderr: ${stderr}`);
+    callback();
   });
 }
