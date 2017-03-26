@@ -1,6 +1,6 @@
 {
   "name": "recjpeg",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Recompress images using custom JPEG encoder",
   "keywords": [
     "evaluation",
