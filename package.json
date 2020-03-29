@@ -9,11 +9,8 @@
     "jpeg"
   ],
   "homepage": "https://github.com/chbrown/recjpeg",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/chbrown/recjpeg.git"
-  },
-  "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
+  "repository": "github:chbrown/recjpeg",
+  "author": "Christopher Brown <io@henrian.com>",
   "license": "MIT",
   "bin": {
     "recjpeg": "bin/recjpeg.js"
