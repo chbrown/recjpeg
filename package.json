@@ -25,5 +25,13 @@
     "@types/node": "^13.5.0",
     "@types/optimist": "^0.0.29",
     "typescript": "^3.8.3"
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": false,
+    "printWidth": 88,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
   }
 }
