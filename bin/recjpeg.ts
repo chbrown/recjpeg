@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import {cpus} from 'os';
-import * as async from 'async';
-import * as optimist from 'optimist';
-import {logger, Level} from 'loge';
-import {validateBackup, convertWithBackup, BackupResult, ConvertResult} from '../backup';
-import {reportCompressionResult, CompressionResult} from '../report';
+import {cpus} from 'os'
+import * as async from 'async'
+import * as optimist from 'optimist'
+import {logger, Level} from 'loge'
+import {validateBackup, convertWithBackup, BackupResult, ConvertResult} from '../backup'
+import {reportCompressionResult, CompressionResult} from '../report'
 
 export function main() {
   let argvparser = optimist
@@ -42,22 +42,22 @@ For each argument:
         alias: 'v',
         type: 'boolean',
       },
-    });
+    })
 
-  const {help, verbose} = argvparser.argv;
+  const {help, verbose} = argvparser.argv
   if (help) {
-    argvparser.showHelp();
-    process.exit(0);
+    argvparser.showHelp()
+    process.exit(0)
   }
 
-  logger.level = verbose ? Level.debug : Level.info;
+  logger.level = verbose ? Level.debug : Level.info
 
-  argvparser = argvparser.demand(1);
-  const {_: filepaths, limit, quality, resize} = argvparser.argv;
+  argvparser = argvparser.demand(1)
+  const {_: filepaths, limit, quality, resize} = argvparser.argv
   return run(filepaths, limit, quality, {resize}, error => {
-    if (error) throw error;
-    process.exit(0);
-  });
+    if (error) throw error
+    process.exit(0)
+  })
 }
 
 function run(
@@ -67,7 +67,7 @@ function run(
   options: {resize?: string},
   callback: (error?: Error) => void,
 ) {
-  logger.info(`Checking ${filepaths.length} files can be backed up`);
+  logger.info(`Checking ${filepaths.length} files can be backed up`)
   async.mapLimit<string, BackupResult>(
     filepaths,
     limit,
@@ -75,48 +75,48 @@ function run(
       validateBackup(filepath, (error, result) => {
         // turn errors into null results, to be filtered out later
         if (error) {
-          logger.info(`${error.message} - ignoring ${filepath}`);
+          logger.info(`${error.message} - ignoring ${filepath}`)
         }
-        return callback(null, error ? null : result);
-      });
+        return callback(null, error ? null : result)
+      })
     },
     (error, backupResults) => {
-      if (error) return callback(error);
+      if (error) return callback(error)
       const validBackupResults = backupResults.filter(
         backupResult => backupResult !== null,
-      );
+      )
       if (validBackupResults.length === 0) {
         // early quit, since there's nothing to do
-        return callback();
+        return callback()
       }
-      logger.info(`Starting recompressing ${validBackupResults.length} files`);
+      logger.info(`Starting recompressing ${validBackupResults.length} files`)
       async.mapLimit<BackupResult, ConvertResult>(
         validBackupResults,
         limit,
         ({input, backup}, callback) => {
-          convertWithBackup(input, backup, quality, options, callback);
+          convertWithBackup(input, backup, quality, options, callback)
         },
         (error, convertResults) => {
-          if (error) return callback(error);
-          logger.debug(`Done recompressing ${filepaths.length} files`);
+          if (error) return callback(error)
+          logger.debug(`Done recompressing ${filepaths.length} files`)
           async.eachLimit(
             convertResults,
             limit,
             ({output, backup}, callback) => {
               reportCompressionResult(backup, output, (error, compressionResult) => {
-                if (error) return callback(error);
-                logger.info(compressionResult.message);
-                callback();
-              });
+                if (error) return callback(error)
+                logger.info(compressionResult.message)
+                callback()
+              })
             },
             callback,
-          );
+          )
         },
-      );
+      )
     },
-  );
+  )
 }
 
 if (require.main === module) {
-  main();
+  main()
 }
