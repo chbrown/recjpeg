@@ -1,7 +1,7 @@
 import {exec} from 'child_process';
 import {logger} from 'loge';
 
-const shellSpecialRegExp = /\s/; // TODO: should check for way more than whitespace
+const shellSpecialRegExp = /\s|[|<>;&]/; // TODO: should check for way more than whitespace
 
 function stringifyShellArgument(arg): string {
   return (arg === undefined || arg === null) ? '' : arg.toString();
@@ -40,7 +40,7 @@ export function convert(input: string,
   const resize_args = options.resize ? ['-resize', options.resize] : [];
   const convert_command = ['convert', input, ...resize_args, 'PNM:-'];
   const cjpeg_command = ['cjpeg', '-quality', quality, '-outfile', output];
-  const command = joinShellArguments(...convert_command, '|', ...cjpeg_command);
+  const command = joinShellArguments(...convert_command) + ' | ' + joinShellArguments(...cjpeg_command);
   logger.debug(`$ ${command}`);
   return exec(command, (err, stdout, stderr) => {
     if (err) {
