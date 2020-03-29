@@ -16,12 +16,14 @@
     "recjpeg": "bin/recjpeg.js"
   },
   "dependencies": {
-    "async": "1.5.2",
-    "loge": "1.0.4",
+    "async": "3.2.0",
+    "loge": "1.0.5",
     "optimist": "0.6.1"
   },
   "devDependencies": {
-    "declarations": "0.1.15",
-    "typescript": "^1.8.10"
+    "@types/async": "^3.0.8",
+    "@types/node": "^13.5.0",
+    "@types/optimist": "^0.0.29",
+    "typescript": "^3.8.3"
   }
 }
