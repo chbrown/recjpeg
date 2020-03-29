@@ -21,11 +21,12 @@ export function reportCompressionResult(
     (error, {originalStats, convertedStats}: {[index: string]: Stats}) => {
       if (error) return callback(error)
       const percentage = (100.0 * convertedStats.size) / originalStats.size
+      const percentageString = percentage.toFixed(2)
       callback(null, {
         original: originalStats.size,
         converted: convertedStats.size,
         percentage,
-        message: `recompressed version of ${original} is ${percentage.toFixed(2)}% the size of the original`,
+        message: `recompressed version of ${original} is ${percentageString}% the size of the original`,
       })
     },
   )
