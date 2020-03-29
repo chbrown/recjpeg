@@ -4,7 +4,7 @@ import {logger} from 'loge';
 const shellSpecialRegExp = /\s|[|<>;&]/; // TODO: should check for way more than whitespace
 
 function stringifyShellArgument(arg): string {
-  return (arg === undefined || arg === null) ? '' : arg.toString();
+  return arg === undefined || arg === null ? '' : arg.toString();
 }
 
 function escapeShellArgument(arg): string {
@@ -32,11 +32,13 @@ function extendExecError(error: Error, stdout: string, stderr: string) {
 Read image at `input` and write compressed JPEG to `output`, clobbering any file
 that might already exist at that location.
 */
-export function convert(input: string,
-                        output: string,
-                        quality: number | string,
-                        options: {resize?: string},
-                        callback: (error?: Error) => void) {
+export function convert(
+  input: string,
+  output: string,
+  quality: number | string,
+  options: {resize?: string},
+  callback: (error?: Error) => void,
+) {
   const resize_args = options.resize ? ['-resize', options.resize] : [];
   const convert_command = ['convert', input, ...resize_args, 'PNM:-'];
   const cjpeg_command = ['cjpeg', '-quality', quality, '-outfile', output];

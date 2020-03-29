@@ -54,8 +54,10 @@ export interface ConvertResult extends BackupResult {
 /**
 Check that `input` has a valid backup path available, and return it.
 */
-export function validateBackup(input: string,
-                               callback: (error: Error, result?: BackupResult) => void) {
+export function validateBackup(
+  input: string,
+  callback: (error: Error, result?: BackupResult) => void,
+) {
   // extension might be the empty string
   const backup = replaceExtension(input, extension => '.bak' + extension);
   access(backup, error => {
@@ -67,11 +69,13 @@ export function validateBackup(input: string,
   });
 }
 
-export function convertWithBackup(input: string,
-                                  backup: string,
-                                  quality: number | string,
-                                  options: {resize?: string},
-                                  callback: (error: Error, result?: ConvertResult) => void) {
+export function convertWithBackup(
+  input: string,
+  backup: string,
+  quality: number | string,
+  options: {resize?: string},
+  callback: (error: Error, result?: ConvertResult) => void,
+) {
   // coerce the extension to match /\.jpe?g/i
   const name = replaceExtension(basename(input), extension => {
     if (/^\.jpe?g$/i.test(extension)) {
