@@ -3,23 +3,23 @@ import {logger} from 'loge'
 
 const shellSpecialRegExp = /\s|[|<>;&]/ // TODO: should check for way more than whitespace
 
-function stringifyShellArgument(arg): string {
-  return arg === undefined || arg === null ? '' : arg.toString()
-}
-
-function escapeShellArgument(arg): string {
-  // check if escaping is needed, first
-  if (shellSpecialRegExp.test(arg)) {
-    // escape single quotes
-    const escapedArg = arg.replace(/'/g, '\\$0')
-    // then wrap in single quotes
-    return "'" + escapedArg + "'"
+function sh(literals: TemplateStringsArray, ...args: unknown[]): string {
+  // IIUC, it's always the case that: literals.length == args.length + 1
+  const parts: string[] = []
+  for (let i = 0; i < args.length; i++) {
+    // ensure given argument is a string
+    let arg = args[i]?.toString() ?? ''
+    // check and escape if needed
+    if (shellSpecialRegExp.test(arg)) {
+      // escape single quotes
+      arg = arg.replace(/'/g, '\\$0')
+      // then wrap in single quotes
+      arg = `'${arg}'`
+    }
+    parts.push(literals[i], arg)
   }
-  return arg
-}
-
-function joinShellArguments(...args: any[]): string {
-  return args.map(stringifyShellArgument).map(escapeShellArgument).join(' ')
+  parts.push(literals[literals.length - 1])
+  return parts.join('')
 }
 
 function extendExecError(error: Error, stdout: string, stderr: string) {
@@ -39,10 +39,11 @@ export function convert(
   options: {resize?: string},
   callback: (error?: Error) => void,
 ) {
-  const resize_args = options.resize ? ['-resize', options.resize] : []
-  const convert_command = ['convert', input, ...resize_args, 'PNM:-']
-  const cjpeg_command = ['cjpeg', '-quality', quality, '-outfile', output]
-  const command = joinShellArguments(...convert_command) + ' | ' + joinShellArguments(...cjpeg_command)
+  const resize_args = options.resize ? sh`-resize ${options.resize}` : ''
+  const convert_command = sh`convert ${input} ${resize_args} PNM:-`
+  const cjpeg_command = sh`cjpeg -quality ${quality} -outfile ${output}`
+
+  const command = `${convert_command} | ${cjpeg_command}`
   logger.debug(`$ ${command}`)
   return exec(command, (err, stdout, stderr) => {
     if (err) {
